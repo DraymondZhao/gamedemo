@@ -32,6 +32,15 @@ app.use(
 // 静态资源
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 数据库就绪状态：未就绪时 /api/* 返回 503，页面照常可访问便于排查
+let dbReady = false;
+app.use('/api/', (req, res, next) => {
+  if (!dbReady) {
+    return res.status(503).json({ error: '数据库尚未就绪，请稍后再试或查看日志' });
+  }
+  next();
+});
+
 // 简单中间件：要求登录
 function requireLogin(req, res, next) {
   if (!req.session || !req.session.userId) {
@@ -226,14 +235,15 @@ app.get(['/', '/game', '/ranking'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// 启动
-initDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`服务已启动: http://localhost:${PORT}`);
+// 启动：先开 HTTP 服务（保证 Railway 健康检查通过、页面可访问），再异步连数据库
+app.listen(PORT, () => {
+  console.log(`HTTP 服务已启动: http://localhost:${PORT}`);
+  initDB()
+    .then(() => {
+      dbReady = true;
+      console.log('数据库已就绪，所有接口可用');
+    })
+    .catch((err) => {
+      console.error('数据库初始化失败，HTTP 仍在运行，但 /api/* 不可用:', err.message || err);
     });
-  })
-  .catch((err) => {
-    console.error('数据库初始化失败，服务无法启动:', err);
-    process.exit(1);
-  });
+});
