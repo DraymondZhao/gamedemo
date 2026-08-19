@@ -54,7 +54,8 @@
       }
       currentUser = null;
       return false;
-    } catch {
+    } catch (err) {
+      console.error('refreshMe 失败:', err);
       currentUser = null;
       return false;
     }
@@ -91,12 +92,25 @@
   });
 
   async function postJSON(url, body) {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    return res.json();
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        try {
+          const obj = JSON.parse(txt);
+          return obj;
+        } catch {
+          return { error: '服务器错误（' + res.status + '）' };
+        }
+      }
+      return res.json();
+    } catch (err) {
+      return { error: '网络请求失败：' + (err.message || err) };
+    }
   }
 
   loginForm.addEventListener('submit', async (e) => {
