@@ -1,0 +1,19 @@
+{
+  "name": "snake-game",
+  "version": "1.0.0",
+  "description": "网页版贪食蛇游戏 - 支持注册登录、难度选择、排行榜",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "pg": "^8.12.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
