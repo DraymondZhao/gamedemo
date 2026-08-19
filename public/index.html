@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>贪食蛇 · 登录</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- 顶栏（登录后显示） -->
+  <div class="topbar" id="topbar" style="display:none">
+    <div class="brand"><span class="dot"></span>贪食蛇 Snake</div>
+    <div class="user-area">
+      <span id="userLabel"></span>
+      <button class="btn-logout" id="logoutBtn">退出</button>
+    </div>
+  </div>
+
+  <!-- 登录 / 注册 视图 -->
+  <div class="center-wrap" id="view-auth">
+    <div class="card auth-card">
+      <h1>🐍 贪食蛇</h1>
+      <div class="subtitle">登录后开始你的挑战</div>
+
+      <div class="tabs">
+        <button id="tab-login" class="active" data-tab="login">登录</button>
+        <button id="tab-register" data-tab="register">注册</button>
+      </div>
+
+      <div class="alert" id="authAlert"></div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginPhone">手机号</label>
+          <input id="loginPhone" type="tel" inputmode="numeric" maxlength="11" placeholder="11 位手机号" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label for="loginPassword">密码</label>
+          <input id="loginPassword" type="password" placeholder="至少 6 位" autocomplete="current-password" />
+        </div>
+        <button class="btn btn-primary" type="submit">登录</button>
+      </form>
+
+      <form id="registerForm" style="display:none">
+        <div class="field">
+          <label for="regPhone">手机号</label>
+          <input id="regPhone" type="tel" inputmode="numeric" maxlength="11" placeholder="11 位手机号" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label for="regPassword">密码</label>
+          <input id="regPassword" type="password" placeholder="至少 6 位" autocomplete="new-password" />
+        </div>
+        <div class="field">
+          <label for="regPassword2">确认密码</label>
+          <input id="regPassword2" type="password" placeholder="再次输入" autocomplete="new-password" />
+        </div>
+        <button class="btn btn-primary" type="submit">注册并登录</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 首页 -->
+  <div class="container" id="view-home" style="display:none">
+    <div class="hero">
+      <h2>欢迎回来，<span id="welcomePhone"></span></h2>
+      <p>选择一个操作开始你的旅程</p>
+    </div>
+    <div class="actions">
+      <a class="action" id="goGame" href="#/game">
+        <div class="icon">🎮</div>
+        <div class="title">开始游戏</div>
+        <div class="desc">选择难度，挑战自我</div>
+      </a>
+      <a class="action" id="goRank" href="#/ranking">
+        <div class="icon">🏆</div>
+        <div class="title">排行榜</div>
+        <div class="desc">查看总榜单排名</div>
+      </a>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="label">简单模式最高分</div>
+        <div class="value" id="bestEasy">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">困难模式最高分</div>
+        <div class="value" id="bestHard">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 游戏视图 -->
+  <div class="container" id="view-game" style="display:none">
+    <a class="back-link" href="#/">← 返回首页</a>
+    <h2 class="section-title">🎮 开始游戏</h2>
+
+    <!-- 难度选择 -->
+    <div id="difficultyBox" class="card">
+      <p style="color:var(--muted); margin-top:0">请选择难度</p>
+      <div class="difficulty">
+        <div class="diff" data-diff="easy">
+          <div class="name">🙂 简单</div>
+          <div class="meta">速度较慢，新手友好</div>
+        </div>
+        <div class="diff" data-diff="hard">
+          <div class="name">😈 困难</div>
+          <div class="meta">速度快，挑战极限</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="startBtn" disabled>选择难度后开始</button>
+    </div>
+
+    <!-- 游戏画布 -->
+    <div id="gameWrap" style="display:none">
+      <div class="game-hud">
+        <div class="hud-item">难度 <b id="hudDiff">简单</b></div>
+        <div class="hud-item">得分 <b id="hudScore">0</b></div>
+        <div class="hud-item">最高 <b id="hudBest">0</b></div>
+      </div>
+      <div class="overlay">
+        <canvas id="canvas" width="480" height="480"></canvas>
+        <div class="mask" id="gameMask">
+          <h3 id="maskTitle">准备开始</h3>
+          <div id="maskBody"></div>
+          <button class="btn btn-primary" id="maskBtn" style="max-width:220px">开始</button>
+        </div>
+      </div>
+      <div class="controls-hint">
+        操作：<kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 或 <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> · 移动端可滑动屏幕
+      </div>
+    </div>
+  </div>
+
+  <!-- 排行榜视图 -->
+  <div class="container" id="view-ranking" style="display:none">
+    <a class="back-link" href="#/">← 返回首页</a>
+    <h2 class="section-title">🏆 总榜单</h2>
+    <div class="rank-tabs">
+      <button class="active" data-rank="easy">简单模式</button>
+      <button data-rank="hard">困难模式</button>
+    </div>
+    <div class="card">
+      <table class="rank">
+        <thead>
+          <tr><th style="width:60px">名次</th><th>用户</th><th style="text-align:right">分数</th></tr>
+        </thead>
+        <tbody id="rankBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/game.js"></script>
+  <script src="/js/ranking.js"></script>
+</body>
+</html>
