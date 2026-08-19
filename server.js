@@ -8,6 +8,9 @@ const { pool, initDB } = require('./db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Railway 等 PaaS 用反向代理做 SSL 终止，必须信任代理才能正确处理 secure cookie
+app.set('trust proxy', 1);
+
 // 会话密钥：优先使用环境变量，本地默认值仅供开发
 const SESSION_SECRET = process.env.SESSION_SECRET || 'snake-dev-secret-change-me';
 
